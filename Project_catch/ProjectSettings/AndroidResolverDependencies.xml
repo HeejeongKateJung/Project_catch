@@ -45,7 +45,7 @@
     <setting name="androidAbis" value="armeabi-v7a,x86" />
     <setting name="bundleId" value="com.JoyKJ.Project_catch" />
     <setting name="explodeAars" value="True" />
-    <setting name="gradleBuildEnabled" value="True" />
+    <setting name="gradleBuildEnabled" value="False" />
     <setting name="gradleTemplateEnabled" value="False" />
     <setting name="installAndroidPackages" value="True" />
     <setting name="packageDir" value="Assets/Plugins/Android" />

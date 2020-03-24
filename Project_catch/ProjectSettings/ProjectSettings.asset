@@ -162,7 +162,7 @@ PlayerSettings:
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
-  AndroidTargetSdkVersion: 0
+  AndroidTargetSdkVersion: 28
   AndroidPreferredInstallLocation: 1
   aotOptions: 
   stripEngineCode: 1
@@ -249,7 +249,7 @@ PlayerSettings:
   AndroidTargetArchitectures: 5
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: C:/Users/hee/Project_catch/user.keystore
+  AndroidKeystoreName: C:/Users/hee/Desktop/project_catch/user.keystore
   AndroidKeyaliasName: user
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 1
