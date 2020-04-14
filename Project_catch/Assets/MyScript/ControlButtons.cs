@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
+using System;
 
 public class ControlButtons : MonoBehaviour
 {
@@ -10,23 +12,62 @@ public class ControlButtons : MonoBehaviour
     public GameObject MakeRoomPanel;
     public GameObject LoadingPanel;
     public GameObject ErrorPanel;
-    public GameObject TcpManager;
+    private GameObject TcpManager;
     public Text RoomNameText;
     public Text RoomPasswordText;
     public GameObject EnterRoomButton;
     public GameObject GridWithElements;
+    public GameObject HttpManager;
 
 
     //테스트용 스트링
-    string userId = "hee46868@gmail.com";
-    string nickname = "기보니";
+    // string userId = "hee46868@gmail.com";
+    // string nickname = "기보니";
+
+    //전달받은 Id값과 nickname
+    string userId;
+    string nickname;
 
     public ControlButtons(){
         
     }
 
-    void Awake()
+    private string ipAddress = "http://35.243.93.175";
+
+
+    IEnumerator IEGetNicknameFromServer(string userEmail, Action<string> callback){
+        WWWForm form = new WWWForm();
+        form.AddField("email", userEmail);
+        UnityWebRequest webRequest = UnityWebRequest.Post(ipAddress+"/returnNickname.php", form);
+        yield return webRequest.SendWebRequest();
+        
+        string result = webRequest.downloadHandler.text;
+
+        callback(result);
+
+        yield return new WaitForSeconds(2f);
+        
+
+    }
+
+    void Start()
     {
+        //IdCarrier 에 담긴 userId를 받아온다
+        userId = GameObject.FindGameObjectWithTag("IdCarrier").GetComponent<Text>().text;
+        Debug.Log("Lobi;ControlButtons; userID: " + userId);
+
+        //nickname 을 서버에 요청해서 가져온다
+
+        StartCoroutine(IEGetNicknameFromServer(userId, (status)=>{
+            
+            nickname = status;
+            Debug.Log("Lobi;ControlButtons; status: " + status);
+            Debug.Log("Lobi;ControlButtons; nickname: " + nickname);
+
+            GameObject.FindGameObjectWithTag("NicknameCarrier").GetComponent<Text>().text = nickname;
+        }));
+
+        TcpManager = GameObject.Find("TcpManager");
         //Loading Panel 띄우기
         LoadingPanel.SetActive(true);
 
@@ -64,22 +105,21 @@ public class ControlButtons : MonoBehaviour
         LoadingPanel.SetActive(true);
 
         //GameRoom을 만들어 달라는 요청을 서버에게 보낸다.
-        bool result = TcpManager.GetComponent<TcpManager>().MakeGameRoom(userId, ownerNickname, title, password);
-        
-        LoadingPanel.SetActive(false);
+        string roomId = TcpManager.GetComponent<TcpManager>().MakeGameRoom(userId, ownerNickname, title, password);
         
         //요청이 실패하면 에러 패널을 띄우고 리턴한다.
-        if(result == false){
-            ErrorPanel.SetActive(true);
-            return;
-        }
+        // if(result == false){
+        //     ErrorPanel.SetActive(true);
+        //     return;
+        // }
         
 
         //panel 닫기
         MakeRoomPanel.SetActive(false);
 
-        //방으로 scene 옮기기
-        // SceneManager.LoadScene("GameRoomScene");
+        //서버로 EnterRoom 요청
+        TcpManager.GetComponent<TcpManager>().RequestEnterRoom(userId, roomId);
+
     }
 
 
@@ -95,16 +135,13 @@ public class ControlButtons : MonoBehaviour
             GameObject.Destroy(child.gameObject);
         }
 
-
         //TcpManager 로부터 roomlist 를 받는다. 받아온 roomlist 는 TcpManager의 Rooms, RoomData class 에 저장
         Rooms roomList = TcpManager.GetComponent<TcpManager>().GetRoomList(userId);
-
 
         //생성된 방이 없다면 아무것도 하지않음
         if(roomList == null){
             LoadingPanel.SetActive(false);
-            Debug.Log("ControlButtons: roomList null");
-
+            
             //비었다는 패널을 on 시킴.
             SetErrorPanelActive("방 목록이 없습니다");
             
@@ -115,14 +152,17 @@ public class ControlButtons : MonoBehaviour
 
         for(int i = 0 ; i < countRoom; i++){
             
+            //update 할 object text 들을 가져온다.
             Text roomTitle = EnterRoomButton.transform.Find("RoomTitle").GetComponent<Text>();
             Text numPeople = EnterRoomButton.transform.Find("NumberPeople").GetComponent<Text>();
             Text roomId = EnterRoomButton.transform.Find("RoomId").GetComponent<Text>();
 
+            //패킷 데이터들을 object 의 text component 에 할당한다.
             roomTitle.text = roomList.rooms[i]._title;
             numPeople.text = roomList.rooms[i]._memNum + "/4";
             roomId.text = roomList.rooms[i]._roomId;
 
+            //Prefab 을 인스턴스화 한다.
             GameObject enterRoomButton = Instantiate(EnterRoomButton) as GameObject;
             
             //oncick event 할당
@@ -149,23 +189,7 @@ public class ControlButtons : MonoBehaviour
 
         string roomId = enterRoomButton.transform.Find("RoomId").GetComponent<Text>().text;
 
-        string result = TcpManager.GetComponent<TcpManager>().RequestEnterRoom(userId, roomId);
-
-        //만약 RequestEnterRoom 결과가 "0"이 아니라면(에러) 그 메시지를 error panel 에 표시한다.
-        if(result.CompareTo("0") == 1){
-
-            LoadingPanel.SetActive(false);
-            SetErrorPanelActive(result);
-
-            return;
-        }
-        
-        LoadingPanel.SetActive(false);
-
-        Debug.Log("ControlButtons; OnClickEnterRoomButton: 성공");
-
-        //방으로 scene 옮기기
-        SceneManager.LoadScene("GameRoomScene");
+        TcpManager.GetComponent<TcpManager>().RequestEnterRoom(userId, roomId);
     }
 
     public void MakeRoomButton(){

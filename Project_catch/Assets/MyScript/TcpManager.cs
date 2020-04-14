@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading;
+using UnityEngine.SceneManagement;
 
 
 public class TcpManager : MonoBehaviour
@@ -22,7 +23,6 @@ public class TcpManager : MonoBehaviour
     public const string CODE_MAKEROOM = "21";
     public const string CODE_ENTERROOM = "22";
     public const string CODE_QUITROOM = "23";
-    public const string CODE_DESTROYROOM = "24";
     public const string CODE_REFRESHROOMLIST = "31";
     public const string CODE_SENDCHAT = "41";
     
@@ -48,12 +48,15 @@ public class TcpManager : MonoBehaviour
 
     }
 
+    public NetworkStream GetNetworkStream(){
+        return ns;
+    }
+
     /**GameRequest 를 byte 로 바꾼다.*/
-    public byte[] ObjectToBytes(GameRequest gameRequest){
+    public byte[] ObjectToBytes(object gameRequest){
         //gameRoom object 를 json string 으로 변환한다.
         string jsonString;
         jsonString = JsonUtility.ToJson(gameRequest);
-        Debug.Log(jsonString);
 
         //json string 을 byte 로 변환한다.
 
@@ -93,7 +96,7 @@ public class TcpManager : MonoBehaviour
 
 
     //서버에게 방 만들기를 요청하기 위한 함수
-    public bool MakeGameRoom(string userId, string ownerNickname, string title, string password){
+    public string MakeGameRoom(string userId, string ownerNickname, string title, string password){
         
         GameRequest makeRoomRequest = new GameRequest(CODE_MAKEROOM 
         ,userId, ownerNickname, title, password);
@@ -109,15 +112,12 @@ public class TcpManager : MonoBehaviour
         ns.Read(Receivebyte, 0, Receivebyte.Length);
 
 
-        string result = Encoding.UTF8.GetString(Receivebyte);
+        string roomId = Encoding.UTF8.GetString(Receivebyte);
         //요청이 실패하면 0이 아닌 에러메시지를 받게 된다.
-        if(result.CompareTo("0") == 1){
-            Debug.Log(result);
-            return false;
-        }
+        Debug.Log(roomId);
 
         //성공하면 true 값 리턴
-        return true;
+        return roomId;
         
         
     }
@@ -197,18 +197,12 @@ public class TcpManager : MonoBehaviour
         }
         //에러가 뜨지 않았다면 받아온 JsonArray에 담긴 roomList를 꺼낸다.
         Rooms roomList = JsonUtility.FromJson<Rooms>("{\"rooms\":" + result + "}");
-        
-        // Debug.Log(roomList.rooms[0]._title);
-        // Debug.Log(roomList.rooms[0]._password);
-        // Debug.Log(roomList.rooms[0]._roomId);
-        // Debug.Log(roomList.rooms[0]._memNum);
-
         return roomList;
 
         
     }
 
-    public string RequestEnterRoom(string userId, string roomId){
+    public void RequestEnterRoom(string userId, string roomId){
         GameRequest enterRoomRequest = new GameRequest(CODE_ENTERROOM, userId, roomId);
 
         byte[] data = ObjectToBytes(enterRoomRequest);
@@ -228,13 +222,22 @@ public class TcpManager : MonoBehaviour
             Debug.Log("RequestEnterRoom 결과에러: " + result);
         }
 
+        //방으로 scene 옮기기
+        SceneManager.LoadScene("GameRoomScene");
+    }
 
-        return result;
+    public void RequestQuitRoom(string userId){
+        GameRequest quitRoomRequest = new GameRequest(CODE_QUITROOM, userId);
+
+        byte[] data = ObjectToBytes(quitRoomRequest);
+
+        ns.Write(BitConverter.GetBytes(data.Length), 0, 4);
+        ns.Write(data, 0, data.Length);
     }
 
     public void SendChat(string userId, string nickname, string chatData){
         ChatInformation chatInformation = new ChatInformation(
-            CODE_SENDCHAT, userId, nickname, DataTime.Now.ToString("HHmmss"), chatText
+            CODE_SENDCHAT, userId, nickname, System.DateTime.Now.ToString("HHmmss"), chatData
         );
 
         byte[] data = ObjectToBytes(chatInformation);
@@ -260,7 +263,6 @@ public class GameRequest{
     }
 
     public GameRequest(string requestCode, string userId, string nickname, string title, string password){
-        
         _requestCode = requestCode;
         _userId = userId;
         _nickname = nickname;
@@ -274,6 +276,12 @@ public class GameRequest{
         _requestCode = requestCode;
         _userId = userId;
         _roomId = roomId;
+    }
+
+    public GameRequest(string requestCode, string userId){
+        
+        _requestCode = requestCode;
+        _userId = userId;
     }
 }
 
