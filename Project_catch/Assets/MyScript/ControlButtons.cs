@@ -189,7 +189,11 @@ public class ControlButtons : MonoBehaviour
 
         string roomId = enterRoomButton.transform.Find("RoomId").GetComponent<Text>().text;
 
-        TcpManager.GetComponent<TcpManager>().RequestEnterRoom(userId, roomId);
+        String msg = TcpManager.GetComponent<TcpManager>().RequestEnterRoom(userId, roomId);
+        
+        if(msg.CompareTo("0") == 1){
+            SetErrorPanelActive(msg);
+        }
     }
 
     public void MakeRoomButton(){

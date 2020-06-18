@@ -22,6 +22,7 @@ public class ControlButtonsInMainRoom : MonoBehaviour
     }
     public void OnClickSendChatButton(){
 
+        ChatInputFieldText.text = "";
         string chatData = ChatInputFieldText.text.ToString();
         TcpManager.GetComponent<TcpManager>().SendChat(userId, nickname, chatData);
 

@@ -127,7 +127,7 @@ public class TcpManager : MonoBehaviour
     */
     public string GetReceive(){
         /** 문제: packet이 짤려서 오는 문제... roomList 전부가 오질 않는다..*/
-        
+
         //먼저 데이터 사이즈를 받는다.
         byte[] dataSizeBuffer = new byte[4];
         ns.Read(dataSizeBuffer, 0, 4);
@@ -202,7 +202,7 @@ public class TcpManager : MonoBehaviour
         
     }
 
-    public void RequestEnterRoom(string userId, string roomId){
+    public String RequestEnterRoom(string userId, string roomId){
         GameRequest enterRoomRequest = new GameRequest(CODE_ENTERROOM, userId, roomId);
 
         byte[] data = ObjectToBytes(enterRoomRequest);
@@ -220,10 +220,12 @@ public class TcpManager : MonoBehaviour
         //요청이 실패하면 0이 아닌 에러메시지를 받게 된다.
         if(result.CompareTo("0") == 1){
             Debug.Log("RequestEnterRoom 결과에러: " + result);
+            return result;
         }
 
         //방으로 scene 옮기기
         SceneManager.LoadScene("GameRoomScene");
+        return result;
     }
 
     public void RequestQuitRoom(string userId){
