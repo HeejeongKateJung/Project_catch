@@ -53,7 +53,10 @@ public class ControlButtons : MonoBehaviour
     void Start()
     {
         //IdCarrier 에 담긴 userId를 받아온다
-        userId = GameObject.FindGameObjectWithTag("IdCarrier").GetComponent<Text>().text;
+
+        //test용
+        userId = "hee4686";
+        // userId = GameObject.FindGameObjectWithTag("IdCarrier").GetComponent<Text>().text;
         Debug.Log("Lobi;ControlButtons; userID: " + userId);
 
         //nickname 을 서버에 요청해서 가져온다

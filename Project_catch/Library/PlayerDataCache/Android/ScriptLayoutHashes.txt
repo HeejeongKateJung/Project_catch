@@ -123,9 +123,12 @@ d251bf88db6c95a6b1aa0b69298da9ef UnityEngine.SpatialTracking.dll:UnityEngine.Spa
 e78cd16ebf9601c38819cd2a88afbf1d Assembly-CSharp.dll:.Reporter
 ee861f67b75d698a5c831b585b3621aa Assembly-CSharp.dll:.ControlButtonsInMainRoom
 b8a5e8091ab0b8861d2add371082c5e0 Unity.TextMeshPro.dll:TMPro.TMP_SpriteAsset
+04ce1c3a9d9e2cad90fc90183061c604 Assembly-CSharp.dll:.PaintGM
 71bb6a6b6c8f052f948db64c7dd3ca4f Assembly-CSharp.dll:.DontDestroy
+71bb6a6b6c8f052f948db64c7dd3ca4f Assembly-CSharp.dll:.ToolControl
 71bb6a6b6c8f052f948db64c7dd3ca4f Assembly-CSharp.dll:.CheckNetworkStatus
 b3ab2106268377ffe25dd18ac23dca28 Unity.TextMeshPro.dll:TMPro.TMP_Asset
+8d6df53fbad48b1d7e7a6567ed0e67e5 Assembly-CSharp.dll:.DotControl
 71bb6a6b6c8f052f948db64c7dd3ca4f Unity.TextMeshPro.dll:TMPro.TMP_SpriteAnimator
 545b9cde08d8897d2d47fb7721bfe69f Assembly-CSharp.dll:.HttpRequest
 4fd8bf02e3089425d3502e26c44ba31a Unity.TextMeshPro.dll:TMPro.TextContainer
