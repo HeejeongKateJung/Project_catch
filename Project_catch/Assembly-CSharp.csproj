@@ -131,6 +131,9 @@
      <Compile Include="Assets\MyScript\Paint\ToolControl.cs" />
      <Compile Include="Assets\MyScript\ReceiveGameDatas.cs" />
      <Compile Include="Assets\MyScript\TcpManager.cs" />
+     <Compile Include="Assets\Paint\DotControl.cs" />
+     <Compile Include="Assets\Paint\PaintGM.cs" />
+     <Compile Include="Assets\Paint\ToolControl.cs" />
      <Compile Include="Assets\Unity-Logs-Viewer\Reporter\MultiKeyDictionary.cs" />
      <Compile Include="Assets\Unity-Logs-Viewer\Reporter\Reporter.cs" />
      <Compile Include="Assets\Unity-Logs-Viewer\Reporter\ReporterGUI.cs" />
