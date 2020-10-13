@@ -24,6 +24,7 @@ public class TcpManager : MonoBehaviour
     public const string CODE_ENTERROOM = "22";
     public const string CODE_QUITROOM = "23";
     public const string CODE_REFRESHROOMLIST = "31";
+    public const string CODE_REFRESHUSERLIST = "51";
     public const string CODE_SENDCHAT = "41";
     
     
@@ -127,7 +128,7 @@ public class TcpManager : MonoBehaviour
     */
     public string GetReceive(){
         /** 문제: packet이 짤려서 오는 문제... roomList 전부가 오질 않는다..*/
-        
+
         //먼저 데이터 사이즈를 받는다.
         byte[] dataSizeBuffer = new byte[4];
         ns.Read(dataSizeBuffer, 0, 4);
@@ -183,7 +184,6 @@ public class TcpManager : MonoBehaviour
 
         //서버로부터 JsonArray 형태의 "RoomList" string을 받게된다.
         string result = GetReceive();
-        Debug.Log("받은 결과: " + result);
 
         if(result == ""){
             return null;
@@ -202,7 +202,41 @@ public class TcpManager : MonoBehaviour
         
     }
 
-    public void RequestEnterRoom(string userId, string roomId){
+    public Users GetUserList(string userId){
+
+        //먼저 새로고침 요청을 서버로 보낸다.
+        GameRequest refreshUserListRequest = new GameRequest(CODE_REFRESHUSERLIST, userId);
+
+        byte[] data = ObjectToBytes(refreshUserListRequest);
+
+        ns.Write(BitConverter.GetBytes(data.Length), 0, 4);
+        ns.Write(data, 0, data.Length);
+
+
+        //서버로부터 JsonArray 형태의 "RoomList" string을 받게된다.
+        Debug.Log("result 기다리는중");
+        string result = GetReceive();
+        Debug.Log("TcpManager: GetUserList: " + result);
+        if(result == ""){
+            return null;
+        }
+
+
+        //JsonArray가 비었는지 확인한다
+        if(result.Equals("[]")){
+            Debug.Log("TcpManager: no Result");
+            return null;
+        }
+        //에러가 뜨지 않았다면 받아온 JsonArray에 담긴 roomList를 꺼낸다.
+        Users userList = JsonUtility.FromJson<Users>("{\"users\":" + result + "}");
+        return userList;
+
+        
+    }
+
+   
+
+    public String RequestEnterRoom(string userId, string roomId){
         GameRequest enterRoomRequest = new GameRequest(CODE_ENTERROOM, userId, roomId);
 
         byte[] data = ObjectToBytes(enterRoomRequest);
@@ -220,10 +254,12 @@ public class TcpManager : MonoBehaviour
         //요청이 실패하면 0이 아닌 에러메시지를 받게 된다.
         if(result.CompareTo("0") == 1){
             Debug.Log("RequestEnterRoom 결과에러: " + result);
+            return result;
         }
 
         //방으로 scene 옮기기
         SceneManager.LoadScene("GameRoomScene");
+        return result;
     }
 
     public void RequestQuitRoom(string userId){
@@ -325,4 +361,22 @@ public class Rooms
     public RoomData[] rooms;
 
 }
+
+[System.Serializable]
+public class UserData
+{
+    
+    public string _userId;
+    public int _nickname;
+    public string _priority;
+    public string _roomId;
+}
+
+[System.Serializable]
+public class Users
+{
+    public UserData[] users;
+
+}
+
 

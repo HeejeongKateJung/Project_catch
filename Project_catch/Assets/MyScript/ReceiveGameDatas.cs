@@ -23,6 +23,7 @@ public class ReceiveGameDatas : MonoBehaviour
     private GameObject CSGameManager;
     public const int CODE_CHATMSG = 111;     //채팅 메시지
     public const int CODE_NOTICE = 112;    //공지사항
+    public const int CODE_USERUPDATE = 113; //다른 유저들 정보
 
 
     void Awake()
@@ -38,12 +39,19 @@ public class ReceiveGameDatas : MonoBehaviour
         //매번 게임 데이터가 왔는지 확인한다.
         if(ns.DataAvailable){
             string result = TcpManager.GetComponent<TcpManager>().GetReceive();
-
+            Debug.Log("ReceiveGameDatas; result: " + result);
             ReceivingPacket packet = JsonUtility.FromJson<ReceivingPacket>("{\"datas\":" + result + "}");
             int _dataTypeCode = packet.datas[0]._dataTypeCode;
             switch(_dataTypeCode){
                 case CODE_CHATMSG:
                     CSGameManager.GetComponent<ControlButtonsInMainRoom>().PrintChatMessage(packet);
+                    break;
+                case CODE_NOTICE:
+                    CSGameManager.GetComponent<ControlButtonsInMainRoom>().PrintNotice(packet);
+                    break;
+                case CODE_USERUPDATE:
+                    Debug.Log("CODE_USERUPDATE: 방에 들어오자마자 userupdate 정보가 있었어야 했다");
+                    Debug.Log(result);
                     break;
 
             }

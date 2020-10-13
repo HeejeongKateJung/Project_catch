@@ -53,7 +53,10 @@ public class ControlButtons : MonoBehaviour
     void Start()
     {
         //IdCarrier 에 담긴 userId를 받아온다
-        userId = GameObject.FindGameObjectWithTag("IdCarrier").GetComponent<Text>().text;
+
+        //test용
+        userId = "hee4686";
+        // userId = GameObject.FindGameObjectWithTag("IdCarrier").GetComponent<Text>().text;
         Debug.Log("Lobi;ControlButtons; userID: " + userId);
 
         //nickname 을 서버에 요청해서 가져온다
@@ -84,9 +87,6 @@ public class ControlButtons : MonoBehaviour
 
         //방 목록을 업데이트한다.
         OnClickListRefreshButton();
-
-
-
     }
 
 
@@ -113,6 +113,7 @@ public class ControlButtons : MonoBehaviour
         //     return;
         // }
         
+        Debug.Log("[OKButton() in ControlButtons]: "+roomId);
 
         //panel 닫기
         MakeRoomPanel.SetActive(false);
@@ -189,7 +190,11 @@ public class ControlButtons : MonoBehaviour
 
         string roomId = enterRoomButton.transform.Find("RoomId").GetComponent<Text>().text;
 
-        TcpManager.GetComponent<TcpManager>().RequestEnterRoom(userId, roomId);
+        String msg = TcpManager.GetComponent<TcpManager>().RequestEnterRoom(userId, roomId);
+        
+        if(msg.CompareTo("0") == 1){
+            SetErrorPanelActive(msg);
+        }
     }
 
     public void MakeRoomButton(){
