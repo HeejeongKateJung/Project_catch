@@ -8,7 +8,7 @@ using System;
 public class ButtonControl : MonoBehaviour
 {
     public GameObject ErrorPanel;
-    // GameObject USER_INFO = GameObject.Find("USER_INFO");
+    GameObject USER_INFO = GameObject.Find("USER_INFO");
     void Start()
     {
         // USER_INFO.USER_ID;
