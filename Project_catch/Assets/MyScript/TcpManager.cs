@@ -35,7 +35,7 @@ public class TcpManager : MonoBehaviour
         
         //Socket connect
         try{
-            
+            // string ipAddress = USER_INFO.GetComponent<StaticVariableHolder>().ipAddress;
             socket.Connect(ipAddress, portNum);
             ns = socket.GetStream();
             

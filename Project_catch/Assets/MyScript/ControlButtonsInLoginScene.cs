@@ -13,7 +13,7 @@ public class ControlButtonsInLoginScene : MonoBehaviour
         string userNickname = NicknameText.text.ToString();
 
         string userEmail = GameObject.FindGameObjectWithTag("IdCarrier").GetComponent<Text>().text;
-        HttpManager.GetComponent<HttpRequest>().SaveNewNickname(userNickname, userEmail);
+        HttpManager.GetComponent<CheckLoginOptions>().SaveNewNickname(userNickname, userEmail);
 
     }
 }
