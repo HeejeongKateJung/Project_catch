@@ -1,5 +1,5 @@
 # Project_catch
-Casual 2D online game with painting
+그림 퀴즈를 맞추는 캐쥬얼 온라인 게임
 
 
 ## ScreenShots
@@ -12,7 +12,8 @@ Casual 2D online game with painting
 - 개발 기간 : 2020.02.05 ~ 개발중
 - 개발 환경 : Unity2D, GoogleCloudPlatform(Ubuntu)
 - 개발 언어 : JAVA, PHP, C#
-- 라이브러리: Google Login API
+- 프로토콜: HTTP, TCP/IP
+- 라이브러리: Google Login API, JAVA NIO
 - 데이터베이스: MariaDB
 - 소개 : 모바일 캐치마인드를 벤치마킹한 캐주얼 게임입니다. 사용자들은 서로 방을 만들고 그림을 공유하며 퀴즈를 맞출 수 있습니다. 
 - 완성된 기능:
