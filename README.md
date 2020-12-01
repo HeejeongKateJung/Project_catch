@@ -9,7 +9,7 @@
 
 - 구분 : 게임
 - 인원 : 1명 (본인)
-- 개발 기간 : 2020.02.05 ~ 개발중
+- 개발 기간 : 2020.08.05 ~ 개발중
 - 개발 환경 : Unity2D, GoogleCloudPlatform(Ubuntu)
 - 개발 언어 : JAVA, PHP, C#
 - 프로토콜: HTTP, TCP/IP
