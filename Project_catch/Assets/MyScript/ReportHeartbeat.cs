@@ -17,7 +17,7 @@ public class ReportHeartbeat : MonoBehaviour
         GameObject USER_INFO = GameObject.Find("USER_INFO");
         //Socket Create
         client = new TcpClient();
-        string ipAddress = "35.243.93.175";
+        string ipAddress = "34.84.9.236";
         
         //Socket connect
         try{

@@ -8,7 +8,7 @@ using System;
 public class ButtonControl : MonoBehaviour
 {
     public GameObject ErrorPanel;
-    GameObject USER_INFO = GameObject.Find("USER_INFO");
+    // GameObject USER_INFO = GameObject.Find("USER_INFO");
     void Start()
     {
         // USER_INFO.USER_ID;
@@ -30,5 +30,6 @@ public class ButtonControl : MonoBehaviour
         ErrorPanel.transform.Find("ErrorText").GetComponent<Text>().text = msg;
         ErrorPanel.SetActive(true);
     }
+
 
 }
