@@ -31,8 +31,8 @@ public class NetworkingBehavior : MonoBehaviour
     {
         try{
 
-            var task = client.ConnectAsync(ipAddress, 9000);
-            task.Wait();
+            client.Connect(ipAddress, 9000);
+            // task.Wait();
 
             if(client.Connected)
             {
@@ -50,28 +50,17 @@ public class NetworkingBehavior : MonoBehaviour
                 int score = USER_INFO.GetComponent<StaticVariableHolder>().USER_SCORE;
                 UserInfo ui = new UserInfo("report_user_info", userId, nickname, score);
                 SendObject(ui);
+
+
+                //유저리스트와 방 리스트를 받아온다.
                 var task1 = new Task<string>(()=> this.ReadFunction());
-                // task1.ContinueWith((task =>
-                // {
-                //     Debug.Log("task1 done");
-                //     return task1.Result;
-                // }));
                 
                 task1.Start();
-                Debug.Log("기다리는중,,,");
+                task1.Wait();
+                Debug.Log(task1.Result);
+
             }
 
-            //
-            // var task1 = new Task<string>(()=> this.ReadFunction());
-            // // task1.ContinueWith((task =>
-            // // {
-            // //     Debug.Log("task1 done");
-            // //     return task1.Result;
-            // // }));
-            
-            // task1.Start();
-            // Debug.Log("기다리는중,,,");
-            // // Debug.Log(task1.Result);
 
         }catch(SocketException SCE){
             Debug.Log("Socket connection error: " + SCE.ToString());
@@ -92,49 +81,35 @@ public class NetworkingBehavior : MonoBehaviour
     }
 
     /// <summary>
-    ///  비동기로 서버로부터 데이터를 읽어오는 task
-    /// </summary>
-    // public async Task ReadAsync(){
-
-    //     byte[] Receivebyte = new byte[100];
-    //     Task<byte[]> task = ns.Read(Receivebyte, 0, Receivebyte.Length);
-
-    //     await task;
-    //     string result = Encoding.UTF8.GetString(Receivebyte);
-    //     Debug.Log(result);
-    
-    //     return new ReceivedData();
-    // }
-
-    /// <summary>
     ///  동기적으로 stream 으로부터 데이터를 읽어오는 task
     /// </summary>
     public string ReadFunction(){
-        byte[] data = new byte[1024];
+        int bufferSize = 100;
+        byte[] data = new byte[bufferSize];
 
-
-        //먼저 데이터 사이즈를 받는다.
-        byte[] dataSizeBuffer = new byte[100];
-
-        Debug.Log("읽기를 기다리는 중,,,");
-        ns.Read(dataSizeBuffer, 0, 100);
-
-        // if(BitConverter.IsLittleEndian){
-        //     Array.Reverse(dataSizeBuffer);
-        //     Debug.Log("리틀 엔디언이래");
-        // }
-        int dataSize = BitConverter.ToInt32(dataSizeBuffer, 0);
-        Debug.Log("dataSize: "+dataSize);
-
-
-
-        // ns.Read(data,0,data.Length);
-        // string result = Encoding.UTF8.GetString(data);
-        // // Debug.Log("result: " + );
-        // Debug.Log("result: " + result);
+        //온전한 데이터를 저장할 변수
+        string result = "";
+        while(true){
+            //패킷은 여러개로 나뉘어 들어오기 때문에 끝까지 반복해서 읽어야한다
+            ns.Read(data,0,bufferSize);
+            string packet = Encoding.UTF8.GetString(data);
         
+            //'\r\n' 이 포함되어 있다면
+            if(result.Contains("\r\n")){
+                Debug.Log("패킷 끝부분");
+                //그 부분을 공백으로 대체한다.
+                packet = packet.Replace("\r\n", "");
+                result+=packet;
+                Array.Clear(data, 0, bufferSize);
+                break;
+            }
 
-        return "dataSize.ToString()";
+            result+=packet;
+            Array.Clear(data, 0, bufferSize);
+        }
+
+        // Debug.Log("result: " + result);
+        return result;
     }
 
     // public async Task Doit(){
