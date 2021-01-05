@@ -345,22 +345,22 @@ public class ChatInformation{
         }
 }
 
-[System.Serializable]
-public class RoomData
-{
+// [System.Serializable]
+// public class RoomData
+// {
     
-    public string _roomId;
-    public int _memNum;
-    public string _title;
-    public string _password;
-}
+//     public string _roomId;
+//     public int _memNum;
+//     public string _title;
+//     public string _password;
+// }
 
-[System.Serializable]
-public class Rooms
-{
-    public RoomData[] rooms;
+// [System.Serializable]
+// public class Rooms
+// {
+//     public RoomData[] rooms;
 
-}
+// }
 
 [System.Serializable]
 public class UserData

@@ -20,15 +20,17 @@ public class NetworkingBehavior : MonoBehaviour
     private GameObject ButtonControl;
 
     string ipAddress = "34.84.9.236";
+
     // Start is called before the first frame update
     void Awake() {
         client = new TcpClient();
-        GameObject ButtonControl = GameObject.Find("ButtonControl");
+        ButtonControl = GameObject.Find("ButtonControl");
         USER_INFO = GameObject.Find("USER_INFO");
     }
 
     void Start()
     {
+        
         try{
 
             client.Connect(ipAddress, 9000);
@@ -43,6 +45,9 @@ public class NetworkingBehavior : MonoBehaviour
                 /// <summary>
                 /// 데이터를 받아서 분석하는 Task
                 /// </summary>
+                //유저리스트와 방 리스트를 받아온다.
+                var task1 = new Task<string>(()=> this.ReadFunction());
+                task1.Start();
 
                 //연결 성공 후 사용자 정보를 서버로 보냄
                 string userId = USER_INFO.GetComponent<StaticVariableHolder>().USER_ID;
@@ -52,12 +57,10 @@ public class NetworkingBehavior : MonoBehaviour
                 SendObject(ui);
 
 
-                //유저리스트와 방 리스트를 받아온다.
-                var task1 = new Task<string>(()=> this.ReadFunction());
-                
-                task1.Start();
                 task1.Wait();
-                Debug.Log(task1.Result);
+                string result = task1.Result;
+                Debug.Log(result);
+                ButtonControl.GetComponent<ButtonControl>().btn_getRoomList(task1.Result);
 
             }
 
@@ -90,25 +93,24 @@ public class NetworkingBehavior : MonoBehaviour
         //온전한 데이터를 저장할 변수
         string result = "";
         while(true){
+            // Debug.Log(result);
             //패킷은 여러개로 나뉘어 들어오기 때문에 끝까지 반복해서 읽어야한다
             ns.Read(data,0,bufferSize);
             string packet = Encoding.UTF8.GetString(data);
-        
+            // Debug.Log(packet);
+            //결과값에 붙인다.
+            result+=packet;
+
             //'\r\n' 이 포함되어 있다면
-            if(result.Contains("\r\n")){
+            if(result.Contains("\n")){
                 Debug.Log("패킷 끝부분");
-                //그 부분을 공백으로 대체한다.
-                packet = packet.Replace("\r\n", "");
-                result+=packet;
                 Array.Clear(data, 0, bufferSize);
                 break;
             }
-
-            result+=packet;
             Array.Clear(data, 0, bufferSize);
         }
 
-        // Debug.Log("result: " + result);
+        result = result.Replace("\n","").Replace("\r","");
         return result;
     }
 
@@ -139,11 +141,4 @@ public class UserInfo {
         _nickname = nickname;
         _score = score;
     }
-}
-
-public class ReceivedData {
-    public string _code;
-    public string _msg;
-
-    public ReceivedData(){}
 }
